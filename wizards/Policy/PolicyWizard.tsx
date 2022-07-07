@@ -5,25 +5,25 @@ import { klona } from 'klona/json'
 import { Fragment, ReactNode, useContext, useMemo } from 'react'
 import set from 'set-value'
 import {
-    WizDetailsHidden,
     EditMode,
-    WizHidden,
-    WizItemSelector,
-    WizKeyValue,
-    WizNumberInput,
     Radio,
-    WizRadioGroup,
     Section,
     Select,
-    WizSingleSelect,
     Step,
-    WizStringsInput,
     StringsMapInput,
     WizardCancel,
     WizardPage,
     WizardSubmit,
     WizArrayInput,
     WizCheckbox,
+    WizDetailsHidden,
+    WizHidden,
+    WizItemSelector,
+    WizKeyValue,
+    WizNumberInput,
+    WizRadioGroup,
+    WizSingleSelect,
+    WizStringsInput,
     WizTextInput,
 } from '../../src'
 import { useEditMode } from '../../src/contexts/EditModeContext'
@@ -35,6 +35,7 @@ import { PlacementRuleKind } from '../common/resources/IPlacementRule'
 import { PolicyApiGroup, PolicyKind, PolicyType } from '../common/resources/IPolicy'
 import { Sync } from '../common/Sync'
 import { isValidKubernetesResourceName, validatePolicyName } from '../common/validation'
+import { MatchExpression, MatchExpressionCollapsed } from '../Placement/MatchExpression'
 import { PlacementSection } from '../Placement/PlacementSection'
 import { Specifications } from './specifications'
 
@@ -346,6 +347,22 @@ export function PolicyWizardTemplates(props: { policies: IResource[] }) {
                 </WizHidden>
 
                 <WizHidden hidden={(template: any) => template?.objectDefinition?.spec?.namespaceSelector === undefined}>
+                    <WizArrayInput
+                        label="Label expressions"
+                        path={`objectDefinition.spec.namespaceSelector.matchExpressions`}
+                        placeholder="Add expression"
+                        collapsedContent={<MatchExpressionCollapsed />}
+                        newValue={{ key: '', operator: 'In', values: [] }}
+                        defaultCollapsed={editMode !== EditMode.Create}
+                    >
+                        <MatchExpression />
+                    </WizArrayInput>
+                    <WizKeyValue
+                        label="Label selectors"
+                        path={`objectDefinition.spec.namespaceSelector.matchLabels`}
+                        placeholder="Add selector"
+                        hidden={(item) => get(item, `objectDefinition.spec.namespaceSelector.matchLabels`) === undefined}
+                    />
                     <WizStringsInput
                         id="include-namespaces"
                         path="objectDefinition.spec.namespaceSelector.include"
